@@ -95,9 +95,9 @@ class MeioUploadHelper extends AppHelper {
         unset($options['before'], $options['between'], $options['after'], $options['format']);
 
         $input = '';
-        if ( $options['data'][$modelKey][$fieldName] != '' ) {
+        if ( isset($options['data'][$modelKey][$fieldName]) AND ! is_array($options['data'][$modelKey][$fieldName]) AND $options['data'][$modelKey][$fieldName] != '' ) {
             $is_image = substr($options['data'][$modelKey][$options['fields']['mimetype']], 0, 5) == 'image';
-            $file_url = '/'.$options['data'][$modelKey][$options['fields']['dir']].'/'.$options['data'][$modelKey][$fieldName];
+            $file_url = '/'.str_replace('\\', '/', $options['data'][$modelKey][$options['fields']['dir']]).'/'.$options['data'][$modelKey][$fieldName];
             $file_path = WWW_ROOT.$options['data'][$modelKey][$options['fields']['dir']].DS.$options['data'][$modelKey][$fieldName];
             //check the thumbnail
             if ( $options['thumbsize'] != 'normal' ) {
