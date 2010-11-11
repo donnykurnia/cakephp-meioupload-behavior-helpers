@@ -606,7 +606,9 @@ class MeioUploadBehavior extends ModelBehavior {
 	function beforeSave(&$model) {
 		foreach($this->__fields as $fieldName=>$options){
 			// if the file is marked to be deleted, use the default or set the field to null
-			if(!empty($model->data[$model->name][$fieldName]['remove'])){
+			if ( is_array($model->data[$model->name][$fieldName]) AND
+                 isset($model->data[$model->name][$fieldName]['remove']) AND
+                 !empty($model->data[$model->name][$fieldName]['remove']) ) {
 				if($options['default']){
 					$model->data[$model->name][$fieldName] = $options['default'];
 				} else {
