@@ -154,7 +154,7 @@ class ImageLib extends Object {
 		 */
 		if ($this->source_image == '')
 		{
-			$this->set_error('You must specify a source image in your preferences.');
+			$this->set_error(__d("image_lib", 'You must specify a source image in your preferences.', true));
 			return FALSE;	   
 		}
 
@@ -168,7 +168,7 @@ class ImageLib extends Object {
 		 */
 		if ( ! function_exists('getimagesize'))
 		{
-			$this->set_error('Your server must support the GD image library in order to determine the image properties.');
+			$this->set_error(__d("image_lib", 'Your server must support the GD image library in order to determine the image properties.', true));
 			return FALSE;
 		}
 
@@ -407,7 +407,7 @@ class ImageLib extends Object {
 
 		if ($this->rotation_angle == '' OR ! in_array($this->rotation_angle, $degs))
 		{
-			$this->set_error('An angle of rotation is required to rotate the image.');
+			$this->set_error(__d("image_lib", 'An angle of rotation is required to rotate the image.', true));
 			return FALSE;	   
 		}
 
@@ -563,7 +563,7 @@ class ImageLib extends Object {
 		//  Do we have a vaild library path?
 		if ($this->library_path == '')
 		{
-			$this->set_error('The path to your image library is not correct.  Please set the correct path in your image preferences.');
+			$this->set_error(__d("image_lib", 'The path to your image library is not correct.  Please set the correct path in your image preferences.', true));
 			return FALSE;
 		}
 
@@ -607,7 +607,7 @@ class ImageLib extends Object {
 		//	Did it work?
 		if ($retval > 0)
 		{
-			$this->set_error('Image processing failed.  Please verify that your server supports the chosen protocol and that the path to your image library is correct.');
+			$this->set_error(__d("image_lib", 'Image processing failed.  Please verify that your server supports the chosen protocol and that the path to your image library is correct.', true));
 			return FALSE;
 		}
 
@@ -632,7 +632,7 @@ class ImageLib extends Object {
 	{
 		if ($this->library_path == '')
 		{
-			$this->set_error('The path to your image library is not correct.  Please set the correct path in your image preferences.');
+			$this->set_error(__d("image_lib", 'The path to your image library is not correct.  Please set the correct path in your image preferences.', true));
 			return FALSE;
 		}
 
@@ -689,7 +689,7 @@ class ImageLib extends Object {
 		//  Did it work?
 		if ($retval > 0)
 		{
-			$this->set_error('Image processing failed.  Please verify that your server supports the chosen protocol and that the path to your image library is correct.');
+			$this->set_error(__d("image_lib", 'Image processing failed.  Please verify that your server supports the chosen protocol and that the path to your image library is correct.', true));
 			return FALSE;
 		}
 
@@ -717,7 +717,7 @@ class ImageLib extends Object {
 		// this function is only supported as of PHP 4.3
 		if ( ! function_exists('imagerotate'))
 		{
-			$this->set_error('Image rotation does not appear to be supported by your server.');
+			$this->set_error(__d("image_lib", 'Image rotation does not appear to be supported by your server.', true));
 			return FALSE;
 		}
 
@@ -882,7 +882,7 @@ class ImageLib extends Object {
 	{
 		if ( ! function_exists('imagecolortransparent'))
 		{
-			$this->set_error('The GD image library is required for this feature.');
+			$this->set_error(__d("image_lib", 'The GD image library is required for this feature.', true));
 			return FALSE;
 		}
 
@@ -1000,7 +1000,7 @@ class ImageLib extends Object {
 
 		if ($this->wm_use_truetype == TRUE AND ! file_exists($this->wm_font_path))
 		{
-			$this->set_error('Unable to find a font to use.');
+			$this->set_error(__d("image_lib", 'Unable to find a font to use.', true));
 			return FALSE;
 		}
 
@@ -1149,7 +1149,7 @@ class ImageLib extends Object {
 			case	 1 :
 						if ( ! function_exists('imagecreatefromgif'))
 						{
-							$this->set_error(array('Your server does not support the GD function required to process this type of image.', 'GIF images are often not supported due to licensing restrictions.  You may have to use JPG or PNG images instead.'));
+							$this->set_error(array(__d("image_lib", 'Your server does not support the GD function required to process this type of image.', true), __d("image_lib", 'GIF images are often not supported due to licensing restrictions.  You may have to use JPG or PNG images instead.', true)));
 							return FALSE;
 						}
 
@@ -1158,7 +1158,7 @@ class ImageLib extends Object {
 			case 2 :
 						if ( ! function_exists('imagecreatefromjpeg'))
 						{
-							$this->set_error(array('Your server does not support the GD function required to process this type of image.', 'JPG images are not supported.'));
+							$this->set_error(array(__d("image_lib", 'Your server does not support the GD function required to process this type of image.', true), __d("image_lib", 'JPG images are not supported.', true)));
 							return FALSE;
 						}
 
@@ -1167,7 +1167,7 @@ class ImageLib extends Object {
 			case 3 :
 						if ( ! function_exists('imagecreatefrompng'))
 						{
-							$this->set_error(array('Your server does not support the GD function required to process this type of image.', 'PNG images are not supported.'));
+							$this->set_error(array(__d("image_lib", 'Your server does not support the GD function required to process this type of image.', true), __d("image_lib", 'PNG images are not supported.', true)));
 							return FALSE;
 						}
 
@@ -1176,7 +1176,7 @@ class ImageLib extends Object {
 
 		}
 
-		$this->set_error(array('Your server does not support the GD function required to process this type of image.'));
+		$this->set_error(array(__d("image_lib", 'Your server does not support the GD function required to process this type of image.', true)));
 		return FALSE;
 	}
 
@@ -1199,20 +1199,20 @@ class ImageLib extends Object {
 			case 1 :
 						if ( ! function_exists('imagegif'))
 						{
-							$this->set_error(array('Your server does not support the GD function required to process this type of image.', 'GIF images are often not supported due to licensing restrictions.  You may have to use JPG or PNG images instead.'));
+							$this->set_error(array(__d("image_lib", 'Your server does not support the GD function required to process this type of image.', true), __d("image_lib", 'GIF images are often not supported due to licensing restrictions.  You may have to use JPG or PNG images instead.', true)));
 							return FALSE;
 						}
 
 						if ( ! @imagegif($resource, $this->full_dst_path))
 						{
-							$this->set_error('Unable to save the image.  Please make sure the image and file directory are writable.');
+							$this->set_error(__d("image_lib", 'Unable to save the image.  Please make sure the image and file directory are writable.', true));
 							return FALSE;
 						}
 				break;
 			case 2	:
 						if ( ! function_exists('imagejpeg'))
 						{
-							$this->set_error(array('Your server does not support the GD function required to process this type of image.', 'JPG images are not supported.'));
+							$this->set_error(array(__d("image_lib", 'Your server does not support the GD function required to process this type of image.', true), __d("image_lib", 'JPG images are not supported.', true)));
 							return FALSE;
 						}
 
@@ -1223,25 +1223,25 @@ class ImageLib extends Object {
 
 						if ( ! @imagejpeg($resource, $this->full_dst_path, $this->quality))
 						{
-							$this->set_error('Unable to save the image.  Please make sure the image and file directory are writable.');
+							$this->set_error(__d("image_lib", 'Unable to save the image.  Please make sure the image and file directory are writable.', true));
 							return FALSE;
 						}
 				break;
 			case 3	:
 						if ( ! function_exists('imagepng'))
 						{
-							$this->set_error(array('Your server does not support the GD function required to process this type of image.', 'PNG images are not supported.'));
+							$this->set_error(array(__d("image_lib", 'Your server does not support the GD function required to process this type of image.', true), __d("image_lib", 'PNG images are not supported.', true)));
 							return FALSE;
 						}
 
 						if ( ! @imagepng($resource, $this->full_dst_path))
 						{
-							$this->set_error('Unable to save the image.  Please make sure the image and file directory are writable.');
+							$this->set_error(__d("image_lib", 'Unable to save the image.  Please make sure the image and file directory are writable.', true));
 							return FALSE;
 						}
 				break;
 			default		:
-							$this->set_error(array('Your server does not support the GD function required to process this type of image.'));
+							$this->set_error(array(__d("image_lib", 'Your server does not support the GD function required to process this type of image.', true)));
 							return FALSE;
 				break;
 		}
@@ -1345,7 +1345,7 @@ class ImageLib extends Object {
 
 		if ( ! file_exists($path))
 		{
-			$this->set_error('The path to the image is not correct.');
+			$this->set_error(__d("image_lib", 'The path to the image is not correct.', true));
 			return FALSE;
 		}
 
@@ -1508,15 +1508,12 @@ class ImageLib extends Object {
 		{
 			foreach ($msg as $val)
 			{
-
-				$msg = __($val, true);
 				$this->error_msg[] = $msg;
                 $this->log($msg, LOG_ERROR);
 			}
 		}
 		else
 		{
-			$msg = __($msg, true);
 			$this->error_msg[] = $msg;
             $this->log($msg, LOG_ERROR);
 		}
