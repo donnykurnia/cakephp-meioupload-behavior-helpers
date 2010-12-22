@@ -16,11 +16,13 @@ class MeioUploadHelper extends AppHelper {
             'mimetype' => 'mimetype'
         ),
         'thumbsize' => 'normal',
+        'thumbsize_link' => false,
         'show_realname' => true,
         'show_filesize' => false,
         'link_text' => 'Download file',
         'type' => 'file',
         'full' => false,
+        'default' => false,
     );
 
     function displayFile($fieldName, $options = array()) {
@@ -87,14 +89,19 @@ class MeioUploadHelper extends AppHelper {
 			}
 			$alt = Inflector::humanize(Inflector::underscore($alt));
 		}
+        $class = null;
+        if (isset($options['class'])) {
+            $class = $options['class'];
+            unset($options['class']);
+        }
 
         if ($label !== false) {
             $label = $this->Form->_inputLabel($fieldName, $label, $options);
         }
 
         $out = array_merge(
-                        array('before' => null, 'label' => null, 'between' => null, 'input' => null, 'after' => null, 'error' => null),
-                        array('before' => $options['before'], 'label' => $label, 'between' => $options['between'], 'after' => $options['after'])
+            array('before' => null, 'label' => null, 'between' => null, 'input' => null, 'after' => null, 'error' => null),
+            array('before' => $options['before'], 'label' => $label, 'between' => $options['between'], 'after' => $options['after'])
         );
         $format = null;
         if (is_array($options['format']) && in_array('input', $options['format'])) {
@@ -103,25 +110,62 @@ class MeioUploadHelper extends AppHelper {
         unset($options['before'], $options['between'], $options['after'], $options['format']);
 
         $input = '';
+        //if default is set to true, use it
+        if ( $options['default'] !== FALSE ) {
+            $file_url = ($options['full'] ? FULL_BASE_URL : '').$this->webroot.'default/'.str_replace('\\', '/', $options['default']).'/'.'default.png';
+            $file_path = WWW_ROOT.'default/'.$options['default'].DS.'default.png';
+            //check the thumbnail
+            if ( $options['thumbsize'] != 'normal' ) {
+                $file_url = ($options['full'] ? FULL_BASE_URL : '').$this->webroot.'default/'.str_replace('\\', '/', $options['default']).'/'.'thumb.'.$options['thumbsize'].'.'.'default.png';
+                $file_path = WWW_ROOT.'default/'.$options['default'].DS.'thumb.'.$options['thumbsize'].'.'.'default.png';
+            }
+            if ( is_readable($file_path) ) {
+                $input = $this->Html->image($file_url, array('alt' => $alt, 'class' => $class));
+                if ( $options['thumbsize_link'] ){
+                    $link_file_url = ($options['full'] ? FULL_BASE_URL : '').$this->webroot.'default/'.str_replace('\\', '/', $options['default']).'/'.'default.png';
+                    $link_file_path = WWW_ROOT.'default/'.$options['default'].DS.'default.png';
+                    if ( $options['thumbsize_link'] != 'normal' ) {
+                        $link_file_url = ($options['full'] ? FULL_BASE_URL : '').$this->webroot.'default/'.str_replace('\\', '/', $options['default']).'/'.'thumb.'.$options['thumbsize_link'].'.'.'default.png';
+                        $link_file_path = WWW_ROOT.'default/'.$options['default'].DS.'thumb.'.$options['thumbsize_link'].'.'.'default.png';
+                    }
+                    if (is_readable($link_file_path) ) {
+                        //wrap image inside link to thumbsize_link file
+                        $input = $this->Html->link($input, $link_file_url, array('escape' => false));
+                    }
+                }
+            }
+        }
+        //if the file data available, override default if set by the block above
         if ( isset($fileData[$fieldName]) AND ! is_array($fileData[$fieldName]) AND $fileData[$fieldName] != '' ) {
             $is_image = substr($fileData[$options['fields']['mimetype']], 0, 5) == 'image';
             $file_url = ($options['full'] ? FULL_BASE_URL : '').$this->webroot.str_replace('\\', '/', $fileData[$options['fields']['dir']]).'/'.$fileData[$fieldName];
             $file_path = WWW_ROOT.$fileData[$options['fields']['dir']].DS.$fileData[$fieldName];
             //check the thumbnail
             if ( $options['thumbsize'] != 'normal' ) {
-                $thumb_file_path = WWW_ROOT.$fileData[$options['fields']['dir']].DS.'thumb.'.$options['thumbsize'].'.'.$fileData[$fieldName];
-                if (is_readable($thumb_file_path) ) {
-                    $file_path = $thumb_file_path;
-                    $file_url = ($options['full'] ? FULL_BASE_URL : '').$this->webroot.$fileData[$options['fields']['dir']].'/'.'thumb.'.$options['thumbsize'].'.'.$fileData[$fieldName];
-                }
+                $file_url = ($options['full'] ? FULL_BASE_URL : '').$this->webroot.str_replace('\\', '/', $fileData[$options['fields']['dir']]).'/'.'thumb.'.$options['thumbsize'].'.'.$fileData[$fieldName];
+                $file_path = WWW_ROOT.$fileData[$options['fields']['dir']].DS.'thumb.'.$options['thumbsize'].'.'.$fileData[$fieldName];
             }
-            if (is_readable($file_path) ) {
+            if ( is_readable($file_path) ) {
+                //the file is image
                 if ( $is_image ) {
-                    $input = $this->Html->image($file_url, array('alt' => $alt));
+                    $input = $this->Html->image($file_url, array('alt' => $alt, 'class' => $class));
+                    if ( $options['thumbsize_link'] ){
+                        $link_file_url = ($options['full'] ? FULL_BASE_URL : '').$this->webroot.str_replace('\\', '/', $fileData[$options['fields']['dir']]).'/'.$fileData[$fieldName];
+                        $link_file_path = WWW_ROOT.$fileData[$options['fields']['dir']].DS.$fileData[$fieldName];
+                        if ( $options['thumbsize_link'] != 'normal' ) {
+                            $link_file_url = ($options['full'] ? FULL_BASE_URL : '').$this->webroot.str_replace('\\', '/', $fileData[$options['fields']['dir']]).'/'.'thumb.'.$options['thumbsize_link'].'.'.$fileData[$fieldName];
+                            $link_file_path = WWW_ROOT.$fileData[$options['fields']['dir']].DS.'thumb.'.$options['thumbsize_link'].'.'.$fileData[$fieldName];
+                        }
+                        if (is_readable($link_file_path) ) {
+                            //wrap image inside link to thumbsize_link file
+                            $input = $this->Html->link($input, $link_file_url, array('escape' => false));
+                        }
+                    }
                 }
+                //non-image file
                 else {
                     $link_text = $options['show_realname'] ? $fileData[$options['fields']['realname']] : $options['link_text'];
-                    $input = $this->Html->link($link_text, $file_url);
+                    $input = $this->Html->link($link_text, $file_url, array('class' => $class));
                 }
             }
         }
