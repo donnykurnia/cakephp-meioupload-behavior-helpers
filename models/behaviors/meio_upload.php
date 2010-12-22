@@ -631,7 +631,7 @@ class MeioUploadBehavior extends ModelBehavior {
 				continue;
 			}
 			//if the record is already saved in the database, set the existing file to be removed after the save is sucessfull
-			if( $model->{$model->primaryKey} > 0 ){
+			if( $model->id > 0 ){
 				$this->setFileToRemove($model, $fieldName);
 			}
 			// Fix the filename, removing bad characters and avoiding from overwriting existing ones
