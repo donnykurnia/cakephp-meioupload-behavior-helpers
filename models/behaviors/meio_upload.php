@@ -656,7 +656,12 @@ class MeioUploadBehavior extends ModelBehavior {
 					} else {
 						$thumbSaveAs = $this->__fields[$model->alias][$fieldName]['dir'].DS.'thumb.'.$key.'.'.$this->__filename[$fieldName];
 					}
-					$this->resizeCropImage($saveAs, $thumbSaveAs, $value['width'], $value['height']);
+					if ( isset($value['method']) and $value['method'] == 'resizeOnly' ) {
+						$this->resizeOnly($saveAs, $thumbSaveAs, $value['width'], $value['height']);
+					} else {
+						$this->resizeCropImage($saveAs, $thumbSaveAs, $value['width'], $value['height']);
+					}
+					
 				}
 			}
 			
@@ -851,6 +856,81 @@ class MeioUploadBehavior extends ModelBehavior {
                         ));
                         $result = $imageLib->crop();
                     }
+                }
+            }
+        }
+        return $result;
+    }
+
+    function resizeOnly($source_image, $new_image, $resize_width, $resize_height) {
+        //default value
+        $result = false;
+        //sanitize
+        $resize_width = intval($resize_width);
+        $resize_height = intval($resize_height);
+        //check size
+        if ( $resize_width > 0 AND $resize_height > 0 ) {
+            $resize_ratio = floatval($resize_width) / floatval($resize_height);
+
+            //copy the source into new image
+            if ( $source_image != $new_image ) {
+                @copy($source_image, $new_image);
+                @chmod($new_image, 0644);
+            }
+
+            //load libs
+            App::import('Lib', 'ImageLib');
+            $imageLib = new ImageLib();
+            $upload_data = array();
+
+            //get_image_properties
+            $image_properties = $imageLib->get_image_properties($new_image, true);
+            if ( $image_properties ) {
+                $upload_data['image_width'] = $image_properties['width'];
+                $upload_data['image_height'] = $image_properties['height'];
+                $upload_data['image_type'] = $image_properties['image_type'];
+                $upload_data['image_size_str'] = $image_properties['size_str'];
+            }
+
+            //process image
+            if ( $upload_data['image_width'] > 0 AND $upload_data['image_height'] > 0 ) {
+                $upload_data['is_image'] = 1;
+                //count image ratio
+                $image_ratio = floatval($upload_data['image_width']) / floatval($upload_data['image_height']);
+
+                //clear image_lib setting
+                $imageLib->clear();
+
+                //initialize default setting
+                $imageLib->initialize(array(
+                    'source_image' => $new_image,
+                    'image_library' => 'imagemagick',
+                    'library_path' => '/usr/bin/',
+                    'create_thumb' => FALSE
+                ));
+                //resize
+                //determine resize by width or by height
+                if ( $image_ratio > $resize_ratio ) { //resize by width
+                    //CakeLog::write('debug', 'resize by width');
+                    $imageLib->initialize(array(
+                        'source_image' => $new_image,
+                        'master_dim' => 'width',
+                        'width' => $resize_width,
+                        'height' => 1,
+                        'maintain_ratio' => TRUE
+                    ));
+                    $result = $imageLib->resize();
+                }
+                else { //resize by height
+                    //CakeLog::write('debug', 'resize by height');
+                    $imageLib->initialize(array(
+                        'source_image' => $new_image,
+                        'master_dim' => 'height',
+                        'width' => 1,
+                        'height' => $resize_height,
+                        'maintain_ratio' => TRUE
+                    ));
+                    $result = $imageLib->resize();
                 }
             }
         }

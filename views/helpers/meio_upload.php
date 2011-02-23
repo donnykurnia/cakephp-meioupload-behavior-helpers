@@ -23,6 +23,7 @@ class MeioUploadHelper extends AppHelper {
         'type' => 'file',
         'full' => false,
         'default' => false,
+        'onlyURL' => false,
     );
 
     function displayFile($fieldName, $options = array()) {
@@ -110,6 +111,7 @@ class MeioUploadHelper extends AppHelper {
         unset($options['before'], $options['between'], $options['after'], $options['format']);
 
         $input = '';
+        $file_url = '';
         //if default is set to true, use it
         if ( $options['default'] !== FALSE ) {
             $file_url = ($options['full'] ? FULL_BASE_URL : '').$this->webroot.'default/'.str_replace('\\', '/', $options['default']).'/'.'default.png';
@@ -133,6 +135,9 @@ class MeioUploadHelper extends AppHelper {
                         $input = $this->Html->link($input, $link_file_url, array('escape' => false));
                     }
                 }
+            }
+            else {
+                $file_url = '';
             }
         }
         //if the file data available, override default if set by the block above
@@ -168,6 +173,12 @@ class MeioUploadHelper extends AppHelper {
                     $input = $this->Html->link($link_text, $file_url, array('class' => $class));
                 }
             }
+            else {
+                $file_url = '';
+            }
+        }
+        if ( $options['onlyURL'] ) {
+            return $file_url;
         }
 
         $out['input'] = $input;
